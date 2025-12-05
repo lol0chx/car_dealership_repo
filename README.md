@@ -62,8 +62,8 @@ D & B Used Cars|111 Old Benbrook Rd|817-555-5555
 ## ▶️ Run Instructions
 1. Clone the repo
    ```bash
-   git clone https://github.com/praytoo/car-dealership.git
-   cd car-dealership
+   git clone https://github.com/praytoo/Workshop-Dealership
+   cd Workshop-Dealership
 ---
 
 ## 🖼️ Screenshots
