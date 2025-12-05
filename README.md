@@ -7,17 +7,17 @@ This project replaces file-based persistence with full **CRUD database operation
 ---
 
 ## 📚 Table of Contents
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Features](#-features)
-- [Run Instructions](#-run-instructions)
-- [Screenshots](#-screenshots)
-- [Interesting Code Snippet](#-interesting-code-snippet)
-- [Author](#-author)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Run Instructions](#run-instructions)
+- [Screenshots](#screenshots)
+- [Interesting Code Snippet](#interesting-code-snippet)
+- [Author](#author)
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Java 17+**
 - **Maven**
@@ -28,7 +28,7 @@ This project replaces file-based persistence with full **CRUD database operation
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 src/main/java
@@ -53,7 +53,7 @@ src/main/java
 ```
 ---
 
-## 🧠 Features
+## Features
 ✔ Vehicle Searching
 
 Users can search the database by:
@@ -98,7 +98,7 @@ Purpose: Allows the user to select multiple vehicles before making sale or lease
 
 ---
 
-## ▶️ Run Instructions
+## Run Instructions
 1. Configure MySQL
 
 Import the SQL schema + insert data:
@@ -120,7 +120,7 @@ dataSource.setPassword("yourpassword");
 ```
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 Homescreen:
 ![homescreen](images/HomeScreen.png)
 Vehicle Display:
@@ -128,7 +128,7 @@ Vehicle Display:
 
 ---
 
-## 💡 Interesting Code Snippet
+## Interesting Code Snippet
 ```
 public int vehicleAdd() {
         try (Connection connection = dataSource.getConnection();
@@ -167,7 +167,7 @@ It then tells you how many columns were updated in response to the vehicle addit
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Prince Haywood
 📍 Playa Vista, California
