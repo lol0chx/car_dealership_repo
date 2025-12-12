@@ -1,53 +1,52 @@
 package com.pluralsight.daos;
 
-import com.pluralsight.inputManager.ContractsFileInput;
 import com.pluralsight.models.LeaseContract;
 
 import javax.sql.DataSource;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LeaseContractDao {
     private static DataSource dataSource;
 
+    @Autowired
     public LeaseContractDao(DataSource dataSource){
         this.dataSource = dataSource;
     }
 
-    public LeaseContractDao(int leaseId, int vin, Date date) {
-    }
-
-
-    public static int addLeaseContract() {
+    // CLI-dependent constructor and static add method removed.
+    // --- CRUD support for Controllers ---
+    public LeaseContract getById(int id){
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO leaseContracts (VIN, Date) VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);) {
-
-            preparedStatement.setString(1, ContractsFileInput.addLeaseContract());
-            preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
-
-            int rows = preparedStatement.executeUpdate();
-
-            System.out.println("Rows updated: " + rows);
-
-            try (ResultSet keys = preparedStatement.getGeneratedKeys();) {
-
-                boolean results = false;
-                while (keys.next()) {
-                    results = true;
-                    System.out.println("Keys added: " + keys.getInt(1));
-                    return keys.getInt(1);
-                }if (!results){
-                    System.out.println("No results were found");
+             PreparedStatement ps = connection.prepareStatement("SELECT leaseID, VIN, date FROM leasecontracts WHERE leaseID = ?")){
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()){
+                if (rs.next()){
+                    int lease_id = rs.getInt("leaseID");
+                    int vin = rs.getInt("VIN");
+                    Date date = rs.getDate("date");
+                    return new LeaseContract(lease_id, vin, date);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
+        } catch (SQLException e){
             throw new RuntimeException(e);
         }
-        return -1;
+        return null;
+    }
+
+    public int addLeaseContract(int vin, Date date){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO leasecontracts (VIN, Date) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)){
+            ps.setInt(1, vin);
+            ps.setDate(2, date);
+            return ps.executeUpdate();
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
     public List<LeaseContract> displayLeaseContract() {
         List<LeaseContract> lContract = new ArrayList<>();

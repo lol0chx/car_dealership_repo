@@ -20,4 +20,16 @@ public class SalesContract {
                 ", VIN=" + VIN + "\n" +
                 ", date=" + date + "\n" + "-------\n";
     }
+
+    public int getSalesID() {
+        return salesID;
+    }
+
+    public int getVIN() {
+        return VIN;
+    }
+
+    public Date getDate() {
+        return date;
+    }
 }

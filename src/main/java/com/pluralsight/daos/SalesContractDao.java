@@ -1,49 +1,50 @@
 package com.pluralsight.daos;
 
-import com.pluralsight.inputManager.ContractsFileInput;
 import com.pluralsight.models.SalesContract;
 
 import javax.sql.DataSource;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class SalesContractDao {
     private static DataSource dataSource;
 
+    @Autowired
     public SalesContractDao(DataSource dataSource){
         this.dataSource = dataSource;
     }
-
-    public static int addSalesContract() {
+    // --- CRUD support for Controllers ---
+    public SalesContract getById(int id){
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO salesContracts (VIN, Date) VALUES (?, ?);", Statement.RETURN_GENERATED_KEYS);) {
-
-            preparedStatement.setString(1, ContractsFileInput.addSalesContract());
-            preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
-
-            int rows = preparedStatement.executeUpdate();
-
-            System.out.println("Rows updated: " + rows);
-
-            try (ResultSet keys = preparedStatement.getGeneratedKeys();) {
-
-                boolean results = false;
-                while (keys.next()) {
-                    results = true;
-                    System.out.println("Keys added: " + keys.getInt(1));
-                    return keys.getInt(1);
-                }if (!results){
-                    System.out.println("No results were found");
+             PreparedStatement ps = connection.prepareStatement("SELECT salesID, VIN, date FROM salescontracts WHERE salesID = ?")){
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()){
+                if (rs.next()){
+                    int sales_id = rs.getInt("salesID");
+                    int vin = rs.getInt("VIN");
+                    Date date = rs.getDate("date");
+                    return new SalesContract(sales_id, vin, date);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
+        } catch (SQLException e){
             throw new RuntimeException(e);
         }
-        return -1;
+        return null;
+    }
+
+    public int addSalesContract(int vin, Date date){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO salescontracts (VIN, Date) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)){
+            ps.setInt(1, vin);
+            ps.setDate(2, date);
+            return ps.executeUpdate();
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
     public List<SalesContract> displaySalesContract() {
         List<SalesContract> sContract = new ArrayList<>();
@@ -66,4 +67,6 @@ public class SalesContractDao {
         }
         return sContract;
     }
+
+    
 }

@@ -20,4 +20,16 @@ public class LeaseContract {
                 ", VIN=" + VIN + "\n" +
                 ", date=" + date + "\n" + "-------\n";
     }
+
+    public int getLeaseID() {
+        return leaseID;
+    }
+
+    public int getVIN() {
+        return VIN;
+    }
+
+    public Date getDate() {
+        return date;
+    }
 }
