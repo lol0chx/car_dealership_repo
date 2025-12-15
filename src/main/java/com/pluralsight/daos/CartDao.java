@@ -1,14 +1,16 @@
 package com.pluralsight.daos;
 
 import com.pluralsight.models.Cart;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class CartDao {
-    private static DataSource dataSource;
+    private final DataSource dataSource;
 
     public CartDao(DataSource dataSource){
         this.dataSource = dataSource;
