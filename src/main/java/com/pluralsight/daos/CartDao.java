@@ -1,6 +1,5 @@
 package com.pluralsight.daos;
 
-import com.pluralsight.inputManager.VehicleInput;
 import com.pluralsight.models.Cart;
 
 import javax.sql.DataSource;
@@ -14,50 +13,39 @@ public class CartDao {
     public CartDao(DataSource dataSource){
         this.dataSource = dataSource;
     }
-    public int addCart(){
+
+    // REST-friendly methods (parameterized; no CLI prompts)
+    public int addCart(int vin){
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cart (VIN) VALUES (?);", Statement.RETURN_GENERATED_KEYS);) {
-
-            preparedStatement.setInt(1, VehicleInput.addVehicleToCart());
-
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cart (VIN) VALUES (?);", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, vin);
             int rows = preparedStatement.executeUpdate();
-
-            System.out.println("Rows updated: " + rows);
-
-            try (ResultSet keys = preparedStatement.getGeneratedKeys();) {
-
-                while (keys.next()) {
-                    System.out.println("Keys added: " + keys.getInt(1));
+            try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
+                if (keys.next()) {
                     return keys.getInt(1);
                 }
             }
+            return rows;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return 1;
     }
-    public int deleteCart(){
+
+    public int deleteCart(int vin){
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM cart WHERE VIN = ?;")) {
-
-            preparedStatement.setInt(1, VehicleInput.deleteVehicleFromCart());
-
-            int rows = preparedStatement.executeUpdate();
-
-            System.out.println("Rows updated: " + rows);
-
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM cart WHERE VIN = ?")) {
+            preparedStatement.setInt(1, vin);
+            return preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return 1;
     }
+
     public List<Cart> viewCart(){
         List<Cart> cart = new ArrayList<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT c.VIN, v.make, v.model, v.price, v.mileage, v.color, v.type, v.year, v.sold FROM cart AS c JOIN vehicles AS v ON c.VIN = v.VIN;");
-
-             ResultSet resultSet = preparedStatement.executeQuery();) {
-
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT c.VIN, v.make, v.model, v.price, v.mileage, v.color, v.type, v.year, v.sold FROM cart AS c JOIN vehicles AS v ON c.VIN = v.VIN");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 int vin = resultSet.getInt("vin");
                 String make = resultSet.getString("make");
@@ -68,8 +56,7 @@ public class CartDao {
                 String type = resultSet.getString("type");
                 int year = resultSet.getInt("year");
                 boolean sold = resultSet.getBoolean("sold");
-
-                Cart viewCart = new Cart(vin,make, model, price, color, type, mileage, year, sold);
+                Cart viewCart = new Cart(vin, make, model, price, color, type, mileage, year, sold);
                 cart.add(viewCart);
             }
         } catch (SQLException e) {
